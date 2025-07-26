@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mcpo:
+    image: ghcr.io/open-webui/mcpo:main
+    container_name: mcpo-proxy
+    ports:
+      - "8000:8000"
+    command: >
+      mcpo --host 0.0.0.0 --port 8000 --api-key "${API_KEY:-demo-secret-key}" 
+      -- uvx mcp-server-time --local-timezone="${TIMEZONE:-America/New_York}"
+    environment:
+      - API_KEY=${API_KEY:-demo-secret-key}
+      - TIMEZONE=${TIMEZONE:-America/New_York}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Example of running multiple MCPO instances for different servers
+  mcpo-memory:
+    image: ghcr.io/open-webui/mcpo:main
+    container_name: mcpo-memory
+    ports:
+      - "8001:8000"
+    command: >
+      mcpo --host 0.0.0.0 --port 8000 --api-key "${API_KEY:-demo-secret-key}"
+      -- npx -y @modelcontextprotocol/server-memory
+    environment:
+      - API_KEY=${API_KEY:-demo-secret-key}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]  
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  default:
+    name: mcpo-network

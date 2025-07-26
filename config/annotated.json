@@ -1,0 +1,65 @@
+{
+  "_comment": "This is an annotated configuration file showing all available options",
+  "_comment2": "Remove comments (lines starting with _) before using this file",
+  
+  "mcpServers": {
+    "_comment_servers": "Each key becomes a route path, e.g., 'memory' -> /memory",
+    
+    "memory": {
+      "_comment_command": "Command-based MCP server using stdio transport",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "_comment_env": "Optional environment variables for the server process",
+      "env": {
+        "NODE_ENV": "production",
+        "MEMORY_STORAGE_PATH": "/app/data/memory"
+      }
+    },
+    
+    "time": {
+      "_comment_timezone": "Time server with custom timezone configuration",
+      "command": "uvx", 
+      "args": ["mcp-server-time", "--local-timezone=America/New_York"]
+    },
+    
+    "filesystem": {
+      "_comment_security": "Filesystem server with restricted directory access",
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@modelcontextprotocol/server-filesystem",
+        "--allowed-directories",
+        "./sandbox",
+        "./uploads"
+      ],
+      "env": {
+        "MAX_FILE_SIZE": "52428800",
+        "_comment_size": "50MB max file size in bytes"
+      }
+    },
+    
+    "sse_server": {
+      "_comment_sse": "Server-Sent Events transport for remote MCP servers",
+      "type": "sse",
+      "url": "http://remote-server:8001/sse",
+      "_comment_headers": "Optional HTTP headers for authentication",
+      "headers": {
+        "Authorization": "Bearer your-token-here",
+        "X-Client-ID": "mcpo-proxy"
+      }
+    },
+    
+    "http_server": {
+      "_comment_http": "Streamable HTTP transport for advanced MCP servers",
+      "type": "streamable_http",
+      "url": "http://another-server:8002/mcp",
+      "headers": {
+        "X-API-Key": "your-api-key-here"
+      }
+    }
+  },
+  
+  "_comment_usage": "Start with: mcpo --config this-file.json --port 8000 --api-key your-secret",
+  "_comment_urls": "Access servers at: http://localhost:8000/{server-name}",
+  "_comment_docs": "OpenAPI docs at: http://localhost:8000/docs"
+}

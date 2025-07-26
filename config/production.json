@@ -1,0 +1,53 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "time": {
+      "command": "uvx",
+      "args": ["mcp-server-time", "--local-timezone=UTC"],
+      "env": {
+        "PYTHONPATH": "/opt/mcp-servers"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@modelcontextprotocol/server-filesystem", 
+        "--allowed-directories", 
+        "/app/data",
+        "/app/uploads"
+      ],
+      "env": {
+        "NODE_ENV": "production",
+        "MAX_FILE_SIZE": "10485760"
+      }
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git"],
+      "env": {
+        "GIT_CONFIG_GLOBAL": "/app/config/gitconfig"
+      }
+    },
+    "external_sse": {
+      "type": "sse",
+      "url": "http://external-mcp-service:8001/sse",
+      "headers": {
+        "Authorization": "Bearer ${EXTERNAL_SERVICE_TOKEN}"
+      }
+    },
+    "external_http": {
+      "type": "streamable_http", 
+      "url": "http://another-service:8002/mcp",
+      "headers": {
+        "X-API-Key": "${HTTP_SERVICE_KEY}"
+      }
+    }
+  }
+}

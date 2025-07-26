@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  # Open Web UI
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-secret-key}
+      - ENABLE_DIRECT_CONNECTIONS=true
+    depends_on:
+      - ollama
+      - mcpo
+    restart: unless-stopped
+    networks:
+      - webui-network
+
+  # Ollama for LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    # Uncomment for GPU support
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    networks:
+      - webui-network
+
+  # MCPO with multiple MCP servers
+  mcpo:
+    image: ghcr.io/open-webui/mcpo:main
+    container_name: mcpo-multi
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../config/multi-server.json:/app/config.json:ro
+      - mcpo-sandbox:/app/sandbox
+    command: >
+      mcpo --host 0.0.0.0 --port 8000 
+      --api-key "${MCPO_API_KEY:-mcpo-secret-key}"
+      --config /app/config.json
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - webui-network
+
+  # Optional: Database for persistent storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-openwebui}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - webui-network
+
+  # Optional: Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD:-changeme}"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - webui-network
+
+volumes:
+  open-webui-data:
+    driver: local
+  ollama-data:
+    driver: local
+  mcpo-sandbox:
+    driver: local
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  webui-network:
+    name: open-webui-network
+    driver: bridge

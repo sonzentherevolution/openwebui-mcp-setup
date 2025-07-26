@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__github_com_upstash_context7-mcp__get-library-docs",
+      "Bash(mkdir:*)"
+    ],
+    "deny": []
+  }
+}
