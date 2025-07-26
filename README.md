@@ -1,3 +1,5 @@
+THE FOLLOWING README IS AI GENERATED :)
+
 # 🚀 MCP Server Setup for Open Web UI
 
 **Easily connect powerful MCP tools to Open Web UI with just a few commands!**
