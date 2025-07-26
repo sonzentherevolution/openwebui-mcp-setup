@@ -1,4 +1,4 @@
-SEE [AI-SETUP-GUIDE.md](https://github.com/sonzentherevolution/openwebui-mcp-setup/blob/main/agentic-setup.md)
+SEE [AI-SETUP-GUIDE.md](https://github.com/sonzentherevolution/openwebui-mcp-setup/blob/main/AI-SETUP-GUIDE.md)
 
 THE FOLLOWING README IS AI GENERATED :)
 
