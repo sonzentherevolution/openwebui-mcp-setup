@@ -1,3 +1,5 @@
+SEE [AI-SETUP-GUIDE.md](https://github.com/sonzentherevolution/openwebui-mcp-setup/blob/main/agentic-setup.md)
+
 THE FOLLOWING README IS AI GENERATED :)
 
 # 🚀 MCP Server Setup for Open Web UI
