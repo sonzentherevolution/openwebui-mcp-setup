@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/sonzentherevolution-openwebui-mcp-setup-badge.png)](https://mseep.ai/app/sonzentherevolution-openwebui-mcp-setup)
+
 SEE [AI-SETUP-GUIDE.md](https://github.com/sonzentherevolution/openwebui-mcp-setup/blob/main/AI-SETUP-GUIDE.md)
 
 THE FOLLOWING README IS AI GENERATED :)
